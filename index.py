@@ -184,8 +184,8 @@ elif st.session_state.page == "Visualisasi":
 
     plt.grid(axis='x', linestyle='--', alpha=0.6)
 
-    # Menampilkan plot
-    st.pyplot(plt.show())
+    # Menampilkan plot di Streamlit
+    st.pyplot(plt.gcf()) 
     
     # Urutkan df_merged berdasarkan 'Jumlah Penduduk Miskin' dari yang terbesar
     df_sorted = df_merged[['Nama Kabupaten/Kota', 'Jumlah Penduduk Miskin']].sort_values(by='Jumlah Penduduk Miskin', ascending=False)
@@ -217,8 +217,8 @@ elif st.session_state.page == "Visualisasi":
 
     plt.grid(axis='x', linestyle='--', alpha=0.6)
 
-    # Menampilkan plot
-    st.pyplot(plt.show())
+    # Menampilkan plot di Streamlit
+    st.pyplot(plt.gcf())
     
     st.subheader("3. Peta Sebaran")
     
