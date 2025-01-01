@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-
 from sklearn.preprocessing import MinMaxScaler
 import skfuzzy as fuzz
 
@@ -11,6 +10,7 @@ import geopandas as gpd
 from shapely.ops import unary_union
 
 from sklearn.metrics import silhouette_score
+
 
 # Sidebar dengan tombol
 st.sidebar.header("Fuzzy C-Means")
@@ -169,6 +169,24 @@ elif st.session_state.page == "Visualisasi":
     st.pyplot(fig)
     
     st.subheader("2. Diagram Batang")
+    
+    # Urutkan df_merged berdasarkan 'Jumlah Penduduk Miskin' dari yang terbesar
+    df_sorted = df_merged[['Nama Kabupaten/Kota', 'Jumlah Penduduk']].sort_values(by='Jumlah Penduduk', ascending=False)
+
+    # Plot batang menggunakan seaborn
+    plt.figure(figsize=(10, 6))  # Menentukan ukuran gambar
+    sns.barplot(x='Jumlah Penduduk', y='Nama Kabupaten/Kota', data=df_sorted, palette='rocket')
+
+    # Menambahkan label dan judul
+    plt.title('Jumlah Penduduk di Kabupaten/Kota Sulawesi Tenggara')
+    plt.xlabel('Jumlah Penduduk (Ribu Jiwa)')
+    plt.ylabel('Nama Kabupaten/Kota')
+
+    plt.grid(axis='x', linestyle='--', alpha=0.6)
+
+    # Menampilkan plot
+    st.pyplot(plt.show())
+    
     # Urutkan df_merged berdasarkan 'Jumlah Penduduk Miskin' dari yang terbesar
     df_sorted = df_merged[['Nama Kabupaten/Kota', 'Jumlah Penduduk Miskin']].sort_values(by='Jumlah Penduduk Miskin', ascending=False)
 
@@ -185,50 +203,28 @@ elif st.session_state.page == "Visualisasi":
     # Menampilkan plot di Streamlit
     st.pyplot(fig)
     
-    st.subheader("3. Peta Sebaran")
-    
-    shp_path = 'shapefile'
-    df_gdf = gpd.read_file(shp_path)
-
-    # Memproses data geometris
-    data_gdf = df_gdf[['NAMOBJ', 'geometry']]
-    data_gdf.columns = ["Nama Kabupaten/Kota", 'geometry']
-    grouped = data_gdf.groupby('Nama Kabupaten/Kota')['geometry'].apply(unary_union).reset_index()
-
-    # Membuat GeoDataFrame baru dengan geometri yang sudah digabungkan
-    data_gdf = gpd.GeoDataFrame(grouped, geometry='geometry')
-    data_gdf['Nama Kabupaten/Kota'] = data_gdf['Nama Kabupaten/Kota'].replace({'Kota Bau Bau': 'Kota Baubau'})
-
-    # Mengurutkan data berdasarkan angka kemiskinan
+    # Urutkan df_merged berdasarkan 'Jumlah Penduduk Miskin' dari yang terbesar
     df_sorted = df_merged[['Nama Kabupaten/Kota', 'Angka Kemiskinan']].sort_values(by='Angka Kemiskinan', ascending=False)
 
-    # Menggabungkan data geometri dan angka kemiskinan
-    data_gdf_ordered = pd.merge(df_sorted, data_gdf, on='Nama Kabupaten/Kota', how='left')
-    data_gdf_ordered = gpd.GeoDataFrame(data_gdf_ordered, geometry=data_gdf_ordered['geometry'])
+    # Plot batang menggunakan seaborn
+    plt.figure(figsize=(10, 6))  # Menentukan ukuran gambar
+    sns.barplot(x='Angka Kemiskinan', y='Nama Kabupaten/Kota', data=df_sorted, palette='rocket')
 
-    # Membuat plot
-    fig, ax = plt.subplots(figsize=(20, 20))
-    data_gdf_ordered.plot(ax=ax, column="Angka Kemiskinan", legend=False, cmap='rocket_r')
+    # Menambahkan label dan judul
+    plt.title('Angka Kemiskinan di Kabupaten/Kota Sulawesi Tenggara')
+    plt.xlabel('Persentase')
+    plt.ylabel('Nama Kabupaten/Kota')
 
-    # Menambahkan label di dalam area geometrinya menggunakan representative_point()
-    for x, y, label in zip(data_gdf_ordered.geometry.centroid.x, 
-                        data_gdf_ordered.geometry.centroid.y, 
-                        data_gdf_ordered['Nama Kabupaten/Kota']):
-        # Menggunakan representative_point untuk memastikan label berada di dalam geometri
-        point = data_gdf_ordered.loc[data_gdf_ordered['Nama Kabupaten/Kota'] == label, 'geometry'].values[0].representative_point()
+    plt.grid(axis='x', linestyle='--', alpha=0.6)
 
-        # Menambahkan label dengan latar belakang dan pengaturan warna kontras
-        ax.text(
-            point.x, point.y, label,
-            fontsize=12, ha='center', color='white',
-            bbox=dict(facecolor='black', alpha=0.4, edgecolor='none', boxstyle='round,pad=0.3')
-        )
-
-    # Menambahkan judul
-    plt.title('Visualisasi Peta Berdasarkan Angka Kemiskinan')
-
-    # Menampilkan plot di Streamlit
-    st.pyplot(fig)
+    # Menampilkan plot
+    st.pyplot(plt.show())
+    
+    st.subheader("3. Peta Sebaran")
+    
+    st.image("image/output_angka_kemiskinan.png")
+    
+    st.image("image/output_kluster.png")
 
 elif st.session_state.page == "Evaluasi":
     st.header("Evaluasi")
