@@ -13,7 +13,7 @@ from shapely.ops import unary_union
 from sklearn.metrics import silhouette_score
 
 # Sidebar dengan tombol
-st.sidebar.header("Navigasi")
+st.sidebar.header("Fuzzy C-Means")
 if st.sidebar.button("Beranda"):
     st.session_state.page = "Beranda"
 if st.sidebar.button("Library"):
